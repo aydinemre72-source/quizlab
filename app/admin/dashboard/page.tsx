@@ -53,12 +53,19 @@ export default async function AdminDashboard() {
                   {quiz.questions[0]?.count ?? 0} question{quiz.questions[0]?.count !== 1 ? 's' : ''}
                 </div>
               </div>
-              <div className="flex gap-2 shrink-0">
+              <div className="flex gap-2 shrink-0 flex-wrap justify-end">
                 <Link
                   href={`/quiz/${quiz.id}`}
                   className="px-3 py-1.5 rounded-lg border border-stone-200 text-xs hover:bg-stone-50 transition-colors"
                 >
                   Aperçu
+                </Link>
+                <Link
+                  href={`/admin/quiz/${quiz.id}/results`}
+                  className="px-3 py-1.5 rounded-lg border border-stone-200 text-xs hover:bg-stone-50 transition-colors"
+                  style={{ color: '#4A7C6F', borderColor: '#4A7C6F' }}
+                >
+                  Résultats
                 </Link>
                 <Link
                   href={`/admin/quiz/${quiz.id}/edit`}
