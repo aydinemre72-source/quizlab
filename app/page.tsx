@@ -1,60 +1,51 @@
-'use client'
+import { supabase, Quiz } from '@/lib/supabase'
+import Link from 'next/link'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+export const revalidate = 0
 
-export default function AdminLoginPage() {
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
-
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    const res = await fetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
-    })
-    if (res.ok) {
-      router.push('/admin/dashboard')
-      router.refresh()
-    } else {
-      setError('Mot de passe incorrect.')
-      setLoading(false)
-    }
-  }
+export default async function HomePage() {
+  const { data: quizzes } = await supabase
+    .from('quizzes')
+    .select('*, questions(count)')
+    .order('created_at', { ascending: false })
 
   return (
-    <div className="max-w-sm mx-auto mt-16">
-      <div className="bg-white border border-stone-200 rounded-2xl p-8">
-        <h1 className="font-serif text-2xl font-semibold mb-1">Administration</h1>
-        <p className="text-stone-500 text-sm mb-6">Accès réservé</p>
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <div>
-            <label className="block text-sm font-medium text-stone-600 mb-1.5">Mot de passe</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full border border-stone-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-[#4A7C6F] transition-colors"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="py-2.5 rounded-xl text-white text-sm font-medium transition-opacity disabled:opacity-60"
-            style={{ backgroundColor: '#4A7C6F' }}
-          >
-            {loading ? 'Connexion…' : 'Se connecter'}
-          </button>
-        </form>
+    <div>
+      <div className="text-center mb-10">
+        <h1 className="font-serif text-4xl font-semibold mb-2 tracking-tight">
+          Choisissez un quiz
+        </h1>
+        <p className="text-stone-500">Testez vos connaissances et partagez avec vos amis</p>
       </div>
+
+      {!quizzes || quizzes.length === 0 ? (
+        <div className="text-center py-16 text-stone-400">
+          <div className="text-5xl mb-4">🎯</div>
+          <p>Aucun quiz disponible pour l'instant.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {quizzes.map((quiz: any) => (
+            <Link key={quiz.id} href={`/quiz/${quiz.id}`}>
+              <div className="bg-white border border-stone-200 rounded-2xl p-5 hover:border-[#4A7C6F] hover:shadow-md transition-all group">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="font-serif text-xl font-semibold mb-1 group-hover:text-[#4A7C6F] transition-colors">
+                      {quiz.title}
+                    </h2>
+                    {quiz.description && (
+                      <p className="text-stone-500 text-sm">{quiz.description}</p>
+                    )}
+                  </div>
+                  <span className="shrink-0 text-sm font-medium px-3 py-1 rounded-full bg-[#E8F0EE] text-[#4A7C6F]">
+                    {quiz.questions[0]?.count ?? 0} question{quiz.questions[0]?.count !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -20,3 +20,14 @@ export type Question = {
   correct_index: number
   position: number
 }
+
+export type Result = {
+  id: string
+  quiz_id: string
+  first_name: string
+  last_name: string
+  score: number
+  total: number
+  percent: number
+  completed_at: string
+}
