@@ -21,7 +21,7 @@ export default async function ResultsPage({ params }: { params: { id: string } }
     .order('completed_at', { ascending: false })
 
   // Group by participant for summary
-  const byParticipant: Record<string, { name: string; attempts: typeof results; best: number; avg: number }> = {}
+  const byParticipant: Record<string, { name: string; attempts: any[]; best: number; avg: number }> = {}
   if (results) {
     for (const r of results) {
       const pid = (r as any).participant_id
