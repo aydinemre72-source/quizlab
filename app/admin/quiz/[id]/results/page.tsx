@@ -26,15 +26,19 @@ export default async function ResultsPage({ params }: { params: { id: string } }
     for (const r of results) {
       const pid = (r as any).participant_id
       const p = (r as any).participants
-      if (!byParticipant[pid]) {
-        byParticipant[pid] = { name: `${p.first_name} ${p.last_name}`, attempts: [], best: 0, avg: 0 }
+      const entry = byParticipant[pid]
+      if (entry) {
+        entry.attempts.push(r)
+      } else {
+        byParticipant[pid] = { name: `${p.first_name} ${p.last_name}`, attempts: [r], best: 0, avg: 0 }
       }
-      byParticipant[pid]!.attempts.push(r)
     }
     for (const pid in byParticipant) {
-      const attempts = byParticipant[pid].attempts as any[]
-      byParticipant[pid].best = Math.max(...attempts.map(a => a.percent))
-      byParticipant[pid].avg = Math.round(attempts.reduce((s, a) => s + a.percent, 0) / attempts.length)
+      const entry = byParticipant[pid]
+      if (!entry) continue
+      const attempts = entry.attempts as any[]
+      entry.best = Math.max(...attempts.map((a: any) => a.percent))
+      entry.avg = Math.round(attempts.reduce((s: number, a: any) => s + a.percent, 0) / attempts.length)
     }
   }
 
