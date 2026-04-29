@@ -29,7 +29,7 @@ export default async function ResultsPage({ params }: { params: { id: string } }
       if (!byParticipant[pid]) {
         byParticipant[pid] = { name: `${p.first_name} ${p.last_name}`, attempts: [], best: 0, avg: 0 }
       }
-      byParticipant[pid].attempts.push(r)
+      byParticipant[pid]!.attempts.push(r)
     }
     for (const pid in byParticipant) {
       const attempts = byParticipant[pid].attempts as any[]
